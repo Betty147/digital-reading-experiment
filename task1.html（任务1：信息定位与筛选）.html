@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>任务一：信息定位与筛选</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .task-container {
+            display: flex;
+            gap: 20px;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .main-content {
+            flex: 3;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .sidebar {
+            flex: 1;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .task-header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #3498db;
+        }
+        
+        .task-header h1 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        
+        .task-timer {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #3498db;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 5px;
+            font-weight: bold;
+            z-index: 1000;
+        }
+        
+        .article-section {
+            margin-bottom: 25px;
+            padding: 15px;
+            border-left: 4px solid #e0e0e0;
+            transition: border-color 0.3s;
+        }
+        
+        .article-section:hover {
+            border-left-color: #3498db;
+        }
+        
+        .article-section h3 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        
+        .highlight-box {
+            background: #f8f9fa;
+            border: 2px solid #3498db;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        
+        .recommendation-item {
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 15px;
+            margin-bottom: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .recommendation-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        .recommendation-item.selected {
+            border-color: #2ecc71;
+            background: #f0fff4;
+        }
+        
+        .recommendation-item.distractor {
+            border-color: #e74c3c;
+            background: #fff5f5;
+        }
+        
+        .recommendation-tag {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 3px;
+            font-size: 0.8em;
+            margin-right: 10px;
+        }
+        
+        .task-questions {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 5px;
+            margin-top: 30px;
+        }
+        
+        .question-item {
+            margin-bottom: 20px;
+        }
+        
+        .question-item label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        
+        .question-item textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            min-height: 80px;
+            font-family: inherit;
+        }
+        
+        .navigation-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #ddd;
+        }
+    </style>
+</head>
+<body>
+    <div class="task-timer" id="taskTimer">00:00</div>
+    
+    <div class="task-container">
+        <div class="main-content">
+            <div class="task-header">
+                <h1><i class="fas fa-search"></i> 任务一：信息定位与筛选</h1>
+                <p>请阅读以下研究综述，找出核心信息并回答问题</p>
+                <div class="task-progress">
+                    <span class="progress-label">阅读进度：</span>
+                    <div class="progress-bar-small">
+                        <div class="progress-fill-small" id="readingProgress"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <article>
+                <div class="article-section" id="section-title">
+                    <h2><i class="fas fa-book"></i> 社交媒体对青少年心理健康影响的研究综述</h2>
+                    <p><strong>作者：</strong>张明教授，北京大学心理学系</p>
+                    <p><strong>发布日期：</strong>2023年10月15日</p>
+                    <p><strong>关键词：</strong>社交媒体，青少年，心理健康，抑郁，焦虑</p>
+                </div>
+                
+                <div class="article-section" id="section-abstract">
+                    <h3><i class="fas fa-file-alt"></i> 摘要</h3>
+                    <p>本研究系统回顾了2018-2023年间发表的45项关于社交媒体使用与青少年心理健康关系的实证研究。通过对横断面研究、纵向研究和实验研究的综合分析，本文探讨了不同社交媒体使用模式对青少年心理健康的差异化影响。</p>
+                </div>
+                
+                <div class="article-section" id="section-background">
+                    <h3><i class="fas fa-chart-line"></i> 研究背景</h3>
+                    <p>随着智能手机的普及，青少年社交媒体使用率在过去五年内从72%上升至94%（中国互联网信息中心，2023）。这种快速的技术渗透引发了学术界对潜在心理健康风险的关注。</p>
+                </div>
+                
+                <div class="article-section highlight-box" id="section-conclusion">
+                    <h3><i class="fas fa-bullseye"></i> 核心发现</h3>
+                    <p><strong>本研究的主要结论包括：</strong></p>
+                    <ol>
+                        <li><strong>时间与心理健康呈非线性关系</strong>：每日使用1-2小时社交媒体与心理适应良好相关，但超过3小时后，抑郁症状风险显著增加（OR=1.8, 95%CI 1.4-2.3）。</li>
+                        <li><strong>使用内容比使用时长更重要</strong>：被动浏览（如刷朋友圈）比主动创作内容（如发布状态）更易导致社会比较和自尊下降（β=0.32, p&lt;0.01）。</li>
+                        <li><strong>平台特异性影响</strong>：图像和视频为主的平台（如抖音、Instagram）对外貌焦虑的影响显著大于文本为主的平台（如微博）。</li>
+                        <li><strong>保护性因素</strong>：家长监督和数字素养教育能显著缓冲社交媒体的负面影响（效应量d=0.45）。</li>
+                    </ol>
+                </div>
+                
+                <div class="article-section highlight-box" id="section-method">
+                    <h3><i class="fas fa-flask"></i> 研究方法</h3>
+                    <p>本研究采用系统性文献综述和元分析的方法：</p>
+                    
+                    <h4>文献检索</h4>
+                    <p>在PubMed、PsycINFO、CNKI三个数据库中，以"社交媒体"、"青少年"、"心理健康"等中英文关键词组合检索。</p>
+                    
+                    <h4>纳入标准</h4>
+                    <ul>
+                        <li>研究对象为12-18岁青少年</li>
+                        <li>发表时间为2018年1月至2023年9月</li>
+                        <li>采用量化研究方法</li>
+                        <li>提供效应量或可计算效应量的数据</li>
+                    </ul>
+                    
+                    <h4>数据分析</h4>
+                    <p>使用CMA 3.0软件进行随机效应模型元分析，计算综合效应量。</p>
+                </div>
+                
+                <div class="article-section" id="section-limitation">
+                    <h3><i class="fas fa-exclamation-triangle"></i> 研究局限</h3>
+                    <ol>
+                        <li>大多数研究为横断面设计，因果推断需谨慎</li>
+                        <li>文化差异可能影响结果的普适性</li>
+                        <li>新兴平台（如小红书）研究尚不充分</li>
+                    </ol>
+                </div>
+                
+                <div class="article-section" id="section-reference">
+                    <h3><i class="fas fa-bookmark"></i> 参考文献</h3>
+                    <ol>
+                        <li>Twenge, J. M., &amp; Campbell, W. K. (2019). <em>Journal of Abnormal Psychology</em></li>
+                        <li>李华, 等. (2021). <em>《中国心理卫生杂志》</em></li>
+                        <li>Primack, B. A., et al. (2020). <em>Computers in Human Behavior</em></li>
+                    </ol>
+                </div>
+            </article>
+            
+            <div class="task-questions">
+                <h3><i class="fas fa-question-circle"></i> 回答问题</h3>
+                
+                <div class="question-item">
+                    <label for="q1">1. 本研究的主要结论是什么？（请列出至少两点）</label>
+                    <textarea id="q1" placeholder="请在此输入您的回答..."></textarea>
+                </div>
+            </div>
+        </div>
+        
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h3><i class="fas fa-star"></i> 相关推荐文章</h3>
+                <p>请阅读以下推荐文章，选择与本主题最相关的一篇</p>
+            </div>
+            
+            <div class="recommendation-item" data-id="rec1">
+                <div class="recommendation-tag" style="background: #2ecc71; color: white;">推荐</div>
+                <h4>数字原住民的认知发展：多任务处理的代价与收益</h4>
+                <p><em>心理学前沿，2023</em></p>
+                <p class="article-preview">探讨频繁切换社交媒体对青少年注意力持续性和工作记忆的影响...</p>
+                <button class="btn-select">选择此篇</button>
+            </div>
+            
+            <div class="recommendation-item" data-id="rec2">
+                <div class="recommendation-tag" style="background: #2ecc71; color: white;">推荐</div>
+                <h4>父母介入策略有效性研究：随机对照试验的发现</h4>
+                <p><em>家庭心理学杂志，2022</em></p>
+                <p class="article-preview">比较三种家长监督策略对减少青少年问题性网络使用的效果...</p>
+                <button class="btn-select">选择此篇</button>
+            </div>
+            
+            <div class="recommendation-item distractor" data-id="rec3">
+                <div class="recommendation-tag" style="background: #e74c3c; color: white;">低相关</div>
+                <h4>网络游戏成瘾的诊断标准争议：ICD-11 vs. DSM-5</h4>
+                <p><em>临床心理学评论，2021</em></p>
+                <p class="article-preview">虽然主题相关，但主要讨论游戏而非社交媒体，相关性较弱...</p>
+                <button class="btn-select">选择此篇</button>
+            </div>
+            
+            <div class="recommendation-item" data-id="rec4">
+                <div class="recommendation-tag" style="background: #2ecc71; color: white;">推荐</div>
+                <h4>基于社交媒体的同伴支持对抑郁青少年的干预效果</h4>
+                <p><em>青少年健康杂志，2023</em></p>
+                <p class="article-preview">探索利用社交媒体平台提供心理健康支持的新模式...</p>
+                <button class="btn-select">选择此篇</button>
+            </div>
+            
+            <div class="sidebar-question">
+                <label for="q2">2. 您选择了哪篇文章？请简要说明原因</label>
+                <textarea id="q2" placeholder="请说明您的选择理由..."></textarea>
+            </div>
+            
+            <div class="selection-summary">
+                <h4>已选择：<span id="selectedArticle">无</span></h4>
+            </div>
+        </div>
+    </div>
+    
+    <div class="navigation-buttons">
+        <button id="btn-prev" class="btn btn-secondary" onclick="location.href='index.html'">
+            <i class="fas fa-arrow-left"></i> 返回首页
+        </button>
+        <button id="btn-next" class="btn btn-primary" onclick="location.href='task2.html'">
+            继续任务二 <i class="fas fa-arrow-right"></i>
+        </button>
+    </div>
+
+    <script src="data-logger.js"></script>
+    <script src="aoi-manager.js"></script>
+    <script>
+        // 定义任务1的AOI区域
+        const aoiConfig = {
+            conclusion: {id: 'section-conclusion', name: '核心结论区'},
+            method: {id: 'section-method', name: '研究方法区'},
+            recommendation1: {id: 'rec1', name: '推荐文章1'},
+            recommendation2: {id: 'rec2', name: '推荐文章2'},
+            recommendation3: {id: 'rec3', name: '低相关文章'},
+            recommendation4: {id: 'rec4', name: '推荐文章4'}
+        };
+
+        // 初始化数据记录
+        const dataLogger = new DataLogger('task1');
+        const aoiManager = new AOIManager(aoiConfig, dataLogger);
+
+        // 记录页面加载时间
+        dataLogger.logEvent('page_loaded', {
+            timestamp: new Date().toISOString(),
+            task: 'task1'
+        });
+
+        // 计时器功能
+        let startTime = Date.now();
+        const timerElement = document.getElementById('taskTimer');
+        
+        function updateTimer() {
+            const elapsed = Date.now() - startTime;
+            const minutes = Math.floor(elapsed / 60000);
+            const seconds = Math.floor((elapsed % 60000) / 1000);
+            timerElement.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+        
+        setInterval(updateTimer, 1000);
+
+        // 阅读进度跟踪
+        const articleSections = document.querySelectorAll('.article-section');
+        const progressElement = document.getElementById('readingProgress');
+        
+        function updateReadingProgress() {
+            const scrollPosition = window.scrollY;
+            const windowHeight = window.innerHeight;
+            const documentHeight = document.documentElement.scrollHeight;
+            
+            const scrollPercentage = (scrollPosition / (documentHeight - windowHeight)) * 100;
+            progressElement.style.width = `${Math.min(scrollPercentage, 100)}%`;
+            
+            // 记录滚动事件
+            dataLogger.logEvent('scroll', {
+                position: scrollPosition,
+                percentage: scrollPercentage
+            });
+        }
+        
+        window.addEventListener('scroll', updateReadingProgress);
+
+        // 文章选择功能
+        const recommendationItems = document.querySelectorAll('.recommendation-item');
+        const selectedArticleElement = document.getElementById('selectedArticle');
+        let selectedArticle = null;
+        
+        recommendationItems.forEach(item => {
+            const selectButton = item.querySelector('.btn-select');
+            selectButton.addEventListener('click', () => {
+                // 移除其他项目的选中状态
+                recommendationItems.forEach(i => i.classList.remove('selected'));
+                
+                // 添加当前项目的选中状态
+                item.classList.add('selected');
+                selectedArticle = item.getAttribute('data-id');
+                selectedArticleElement.textContent = item.querySelector('h4').textContent;
+                
+                // 记录选择事件
+                dataLogger.logEvent('article_selected', {
+                    articleId: selectedArticle,
+                    articleTitle: item.querySelector('h4').textContent,
+                    isDistractor: item.classList.contains('distractor')
+                });
+            });
+        });
+
+        // 回答保存功能
+        const answerElements = {
+            q1: document.getElementById('q1'),
+            q2: document.getElementById('q2')
+        };
+        
+        Object.entries(answerElements).forEach(([key, element]) => {
+            element.addEventListener('input', () => {
+                dataLogger.logEvent('answer_updated', {
+                    question: key,
+                    value: element.value.substring(0, 100) // 只记录前100字符
+                });
+            });
+        });
+
+        // 页面离开前保存数据
+        window.addEventListener('beforeunload', () => {
+            const answers = {};
+            Object.entries(answerElements).forEach(([key, element]) => {
+                answers[key] = element.value;
+            });
+            
+            dataLogger.logEvent('task_completed', {
+                selectedArticle: selectedArticle,
+                answers: answers,
+                timeSpent: Date.now() - startTime
+            });
+            
+            dataLogger.saveData();
+        });
+    </script>
+</body>
+</html>

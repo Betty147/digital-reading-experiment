@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>任务二：多源信息整合</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .task-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .task-header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #9b59b6;
+        }
+        
+        .task-timer {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #9b59b6;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 5px;
+            font-weight: bold;
+            z-index: 1000;
+        }
+        
+        .tab-container {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+        
+        .tab-header {
+            display: flex;
+            background: #f8f9fa;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .tab-button {
+            flex: 1;
+            padding: 15px;
+            text-align: center;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            color: #666;
+            transition: all 0.3s;
+        }
+        
+        .tab-button.active {
+            background: white;
+            color: #9b59b6;
+            border-bottom: 3px solid #9b59b6;
+        }
+        
+        .tab-content {
+            display: none;
+            padding: 30px;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .article-content {
+            max-height: 400px;
+            overflow-y: auto;
+            padding-right: 15px;
+        }
+        
+        .article-section {
+            margin-bottom: 25px;
+            padding: 15px;
+            border-left: 4px solid transparent;
+        }
+        
+        .article-section.highlight {
+            background: #f8f9fa;
+            border-left-color: #9b59b6;
+        }
+        
+        .data-point {
+            background: #e8f4fc;
+            border: 1px solid #3498db;
+            border-radius: 5px;
+            padding: 10px;
+            margin: 10px 0;
+        }
+        
+        .tab-timer {
+            margin-top: 20px;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 5px;
+            font-size: 0.9em;
+        }
+        
+        .integration-area {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-top: 30px;
+        }
+        
+        .word-counter {
+            text-align: right;
+            color: #666;
+            font-size: 0.9em;
+            margin-top: 5px;
+        }
+        
+        .copy-hint {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 5px;
+            padding: 10px;
+            margin: 15px 0;
+            font-size: 0.9em;
+            color: #856404;
+        }
+        
+        .tab-stats {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 5px;
+        }
+        
+        .stat-item {
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #9b59b6;
+        }
+        
+        .stat-label {
+            font-size: 0.9em;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="task-timer" id="taskTimer">00:00</div>
+    
+    <div class="task-container">
+        <div class="task-header">
+            <h1><i class="fas fa-exchange-alt"></i> 任务二：多源信息整合</h1>
+            <p>请阅读两种不同观点的文章，整合信息形成综合判断</p>
+            <div class="task-progress">
+                <span class="progress-label">切换次数：</span>
+                <span id="switchCount">0</span> 次
+            </div>
+        </div>
+        
+        <div class="tab-container">
+            <div class="tab-header">
+                <button class="tab-button active" data-tab="tab1">
+                    <i class="fas fa-newspaper"></i> 新闻报道（乐观观点）
+                </button>
+                <button class="tab-button" data-tab="tab2">
+                    <i class="fas fa-chart-bar"></i> 调查报告（谨慎观点）
+                </button>
+            </div>
+            
+            <div class="tab-content active" id="tab1">
+                <div class="article-content">
+                    <h2>AI教育产品市场规模三年增长300%，个性化学习时代来临</h2>
+                    <p><em>教育科技日报 | 2024年3月10日</em></p>
+                    
+                    <div class="article-section">
+                        <h3>导语</h3>
+                        <p>随着ChatGPT等生成式AI的突破性进展，教育科技行业迎来了前所未有的发展机遇。专家预测，AI驱动的个性化学习将成为未来教育的标准配置。</p>
+                    </div>
+                    
+                    <div class="article-section highlight" id="data-market">
+                        <h3>市场规模爆发式增长</h3>
+                        <div class="data-point">
+                            <strong>关键数据：</strong>根据艾瑞咨询最新报告，2023年中国AI教育市场规模达到520亿元，较2020年增长300%。
+                        </div>
+                        <p>其中，K12智能辅导系统占据最大份额（45%），其次是语言学习应用（30%）和高等教育自适应平台（25%）。</p>
+                    </div>
+                    
+                    <div class="article-section">
+                        <h3>成功案例</h3>
+                        <p>北京市朝阳实验中学引入AI数学辅导系统后，学生平均成绩提升了15%。系统能实时诊断知识盲点，并为每个学生生成定制化的练习题和讲解视频。</p>
+                        <div class="data-point">
+                            <strong>校长评价：</strong>"传统教学无法照顾到每个学生的差异，AI系统让因材施教真正成为可能。"
+                        </div>
+                    </div>
+                    
+                    <div class="article-section">
+                        <h3>专家观点</h3>
+                        <div class="data-point">
+                            <strong>清华大学李教授预测：</strong>"未来五年，AI教师助理将覆盖全国80%的中小学。这些系统不仅能批改作业、答疑解惑，还能识别学生的情绪状态，提供心理支持。"
+                        </div>
+                    </div>
+                    
+                    <div class="article-section">
+                        <h3>行业展望</h3>
+                        <p>多家投资机构表示，未来三年将向AI教育领域投入超过200亿元。教育科技初创公司如雨后春笋般涌现，部分产品已开始出海，服务东南亚、中东等市场。</p>
+                    </div>
+                </div>
+                
+                <div class="tab-timer">
+                    本页停留时间：<span id="tab1Time">00:00</span>
+                </div>
+            </div>
+            
+            <div class="tab-content" id="tab2">
+                <div class="article-content">
+                    <h2>AI教育产品实际效果评估报告（2023）</h2>
+                    <p><em>中国教育科学研究院 | 内部调研报告</em></p>
+                    
+                    <div class="article-section">
+                        <h3>调查概况</h3>
+                        <p>本研究对全国15个省份的32所中小学进行了为期一年的跟踪调查，涉及46款AI教育产品的实际使用效果。共收集教师问卷1,200份、学生问卷3,500份、家长问卷2,800份。</p>
+                    </div>
+                    
+                    <div class="article-section highlight" id="data-findings">
+                        <h3>主要发现</h3>
+                        
+                        <h4>1. 效果存在显著差异</h4>
+                        <div class="data-point">
+                            <strong>关键发现：</strong>数学、编程等结构化学科效果较好（效应量d=0.42），语文、英语等需要创造性思维的学科效果有限（d=0.18）。
+                        </div>
+                        <p>10%的产品未能证明任何学习效果提升。</p>
+                        
+                        <h4>2. 技术局限性明显</h4>
+                        <div class="data-point">
+                            <strong>技术问题：</strong>语音识别在方言环境下准确率不足70%，作文自动批改系统无法识别深层逻辑问题，情感识别算法存在54%的误判率。
+                        </div>
+                        
+                        <h4>3. 教育公平隐忧</h4>
+                        <div class="data-point">
+                            <strong>公平问题：</strong>高端AI系统年费超5,000元，城乡数字鸿沟加剧：城市学校使用率78% vs. 农村学校23%。
+                        </div>
+                        
+                        <h4>4. 隐私与伦理风险</h4>
+                        <div class="data-point">
+                            <strong>隐私风险：</strong>87%的产品收集学生个人数据，但只有42%有明确的隐私政策。算法偏见：系统更倾向推荐男生选择STEM课程（比例1.8:1）。
+                        </div>
+                    </div>
+                    
+                    <div class="article-section">
+                        <h3>建议</h3>
+                        <ol>
+                            <li>建立AI教育产品准入和评估标准</li>
+                            <li>加强教师数字素养培训</li>
+                            <li>设立专项资金支持农村和贫困地区</li>
+                            <li>制定严格的学生数据保护法规</li>
+                        </ol>
+                    </div>
+                </div>
+                
+                <div class="tab-timer">
+                    本页停留时间：<span id="tab2Time">00:00</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="tab-stats">
+            <div class="stat-item">
+                <div class="stat-value" id="tab1Visits">0</div>
+                <div class="stat-label">新闻页访问</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="tab2Visits">0</div>
+                <div class="stat-label">报告页访问</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="totalSwitches">0</div>
+                <div class="stat-label">总切换次数</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="totalTime">00:00</div>
+                <div class="stat-label">总阅读时间</div>
+            </div>
+        </div>
+        
+        <div class="integration-area">
+            <h3><i class="fas fa-brain"></i> 信息整合任务</h3>
+            <p>请综合两篇文章的信息，用3-4句话总结AI在教育中的应用现状与挑战。</p>
+            
+            <div class="copy-hint">
+                <i class="fas fa-lightbulb"></i> 提示：您可以复制文章中的关键数据来支持您的观点
+            </div>
+            
+            <textarea id="integrationAnswer" placeholder="请在此处输入您的综合回答..." rows="6"></textarea>
+            <div class="word-counter">
+                字数：<span id="wordCount">0</span> / 建议300字以内
+            </div>
+            
+            <div class="data-reference">
+                <h4><i class="fas fa-clipboard-list"></i> 可参考的关键数据：</h4>
+                <ul>
+                    <li><strong>市场规模：</strong>AI教育市场三年增长300%，达520亿元</li>
+                    <li><strong>效果差异：</strong>数学科效应量d=0.42，语文学科仅d=0.18</li>
+                    <li><strong>公平问题：</strong>城市使用率78% vs 农村23%</li>
+                    <li><strong>技术局限：</strong>语音识别准确率不足70%，情感识别误判率54%</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="navigation-buttons">
+            <button id="btn-prev" class="btn btn-secondary" onclick="location.href='task1.html'">
+                <i class="fas fa-arrow-left"></i> 返回任务一
+            </button>
+            <button id="btn-next" class="btn btn-primary" onclick="location.href='task3.html'">
+                继续任务三 <i class="fas fa-arrow-right"></i>
+            </button>
+        </div>
+    </div>
+
+    <script src="data-logger.js"></script>
+    <script src="aoi-manager.js"></script>
+    <script>
+        // 定义任务2的AOI区域
+        const aoiConfig = {
+            market_data: {id: 'data-market', name: '市场规模数据区'},
+            findings_data: {id: 'data-findings', name: '调查发现数据区'},
+            tab_switch: {name: '标签切换按钮'}
+        };
+
+        // 初始化数据记录
+        const dataLogger = new DataLogger('task2');
+        const aoiManager = new AOIManager(aoiConfig, dataLogger);
+
+        // 记录页面加载时间
+        dataLogger.logEvent('page_loaded', {
+            timestamp: new Date().toISOString(),
+            task: 'task2'
+        });
+
+        // 计时器
+        let startTime = Date.now();
+        let taskTimer = setInterval(updateTaskTimer, 1000);
+        let tab1Timer = 0;
+        let tab2Timer = 0;
+        let currentTab = 'tab1';
+        let tab1StartTime = Date.now();
+        let tabSwitches = 0;
+
+        // 更新总计时器
+        function updateTaskTimer() {
+            const elapsed = Date.now() - startTime;
+            const minutes = Math.floor(elapsed / 60000);
+            const seconds = Math.floor((elapsed % 60000) / 1000);
+            document.getElementById('taskTimer').textContent = 
+                `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            
+            document.getElementById('totalTime').textContent = 
+                `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        // 更新分页计时器
+        function updateTabTimers() {
+            const now = Date.now();
+            
+            if (currentTab === 'tab1') {
+                tab1Timer += now - tab1StartTime;
+                tab1StartTime = now;
+                
+                const minutes = Math.floor(tab1Timer / 60000);
+                const seconds = Math.floor((tab1Timer % 60000) / 1000);
+                document.getElementById('tab1Time').textContent = 
+                    `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            } else {
+                const tab2Now = now;
+                const tab2Minutes = Math.floor(tab2Timer / 60000);
+                const tab2Seconds = Math.floor((tab2Timer % 60000) / 1000);
+                document.getElementById('tab2Time').textContent = 
+                    `${tab2Minutes.toString().padStart(2, '0')}:${tab2Seconds.toString().padStart(2, '0')}`;
+            }
+        }
+
+        // 标签切换功能
+        const tabButtons = document.querySelectorAll('.tab-button');
+        const tabContents = document.querySelectorAll('.tab-content');
+        
+        tabButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const tabId = button.getAttribute('data-tab');
+                
+                // 更新标签页停留时间
+                const now = Date.now();
+                if (currentTab === 'tab1') {
+                    tab1Timer += now - tab1StartTime;
+                } else {
+                    tab2Timer += now - tab1StartTime;
+                }
+                tab1StartTime = now;
+                
+                // 切换标签
+                tabButtons.forEach(btn => btn.classList.remove('active'));
+                tabContents.forEach(content => content.classList.remove('active'));
+                
+                button.classList.add('active');
+                document.getElementById(tabId).classList.add('active');
+                
+                // 更新统计
+                currentTab = tabId;
+                tabSwitches++;
+                
+                document.getElementById('switchCount').textContent = tabSwitches;
+                document.getElementById('totalSwitches').textContent = tabSwitches;
+                
+                if (tabId === 'tab1') {
+                    document.getElementById('tab1Visits').textContent = 
+                        parseInt(document.getElementById('tab1Visits').textContent) + 1;
+                } else {
+                    document.getElementById('tab2Visits').textContent = 
+                        parseInt(document.getElementById('tab2Visits').textContent) + 1;
+                }
+                
+                // 记录标签切换事件
+                dataLogger.logEvent('tab_switched', {
+                    from: currentTab === 'tab1' ? 'tab2' : 'tab1',
+                    to: tabId,
+                    switchCount: tabSwitches,
+                    tab1Time: tab1Timer,
+                    tab2Time: tab2Timer
+                });
+                
+                updateTabTimers();
+            });
+        });
+
+        // 初始化标签页计时器
+        setInterval(updateTabTimers, 1000);
+
+        // 回答框功能
+        const answerBox = document.getElementById('integrationAnswer');
+        const wordCountElement = document.getElementById('wordCount');
+        
+        answerBox.addEventListener('input', () => {
+            const wordCount = answerBox.value.trim().length;
+            wordCountElement.textContent = wordCount;
+            
+            dataLogger.logEvent('answer_updated', {
+                wordCount: wordCount,
+                preview: answerBox.value.substring(0, 50)
+            });
+        });
+
+        // 复制事件监控
+        document.addEventListener('copy', (event) => {
+            const selectedText = window.getSelection().toString();
+            if (selectedText.length > 0) {
+                dataLogger.logEvent('text_copied', {
+                    text: selectedText.substring(0, 100),
+                    length: selectedText.length,
+                    fromTab: currentTab
+                });
+            }
+        });
+
+        // 页面离开前保存数据
+        window.addEventListener('beforeunload', () => {
+            const now = Date.now();
+            if (currentTab === 'tab1') {
+                tab1Timer += now - tab1StartTime;
+            } else {
+                tab2Timer += now - tab1StartTime;
+            }
+            
+            dataLogger.logEvent('task_completed', {
+                answer: answerBox.value,
+                wordCount: answerBox.value.length,
+                tabSwitches: tabSwitches,
+                tab1Time: tab1Timer,
+                tab2Time: tab2Timer,
+                totalTime: Date.now() - startTime
+            });
+            
+            dataLogger.saveData();
+        });
+    </script>
+</body>
+</html>
